@@ -15,6 +15,15 @@ def get_db_connection():
     database_url = os.environ.get('DATABASE_URL')
     return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
 
+def escape_sql_string(value):
+    if value is None:
+        return 'NULL'
+    if isinstance(value, bool):
+        return 'TRUE' if value else 'FALSE'
+    if isinstance(value, (int, float)):
+        return str(value)
+    return "'" + str(value).replace("'", "''") + "'"
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -40,23 +49,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         conn = get_db_connection()
         cursor = conn.cursor()
         
+        query_params = event.get('queryStringParameters') or {}
+        script_id = query_params.get('id')
+        
         if method == 'GET':
-            query_params = event.get('queryStringParameters') or {}
-            path_params = event.get('pathParams') or {}
-            script_id = path_params.get('id')
-            
             if script_id:
-                cursor.execute(
-                    "SELECT * FROM t_p10328449_roblox_scripts_porta.scripts WHERE id = %s",
-                    (script_id,)
-                )
+                query = f"SELECT * FROM t_p10328449_roblox_scripts_porta.scripts WHERE id = {escape_sql_string(script_id)}"
+                cursor.execute(query)
                 script = cursor.fetchone()
                 
                 if script:
-                    cursor.execute(
-                        "SELECT * FROM t_p10328449_roblox_scripts_porta.reviews WHERE script_id = %s ORDER BY created_at DESC",
-                        (script_id,)
-                    )
+                    reviews_query = f"SELECT * FROM t_p10328449_roblox_scripts_porta.reviews WHERE script_id = {escape_sql_string(script_id)} ORDER BY created_at DESC"
+                    cursor.execute(reviews_query)
                     reviews = cursor.fetchall()
                     
                     result = dict(script)
@@ -81,24 +85,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 search = query_params.get('search')
                 
                 query = "SELECT * FROM t_p10328449_roblox_scripts_porta.scripts WHERE 1=1"
-                params = []
                 
                 if category and category != 'All':
-                    query += " AND category = %s"
-                    params.append(category)
+                    query += f" AND category = {escape_sql_string(category)}"
                 
                 if game and game != 'All Games':
-                    query += " AND game = %s"
-                    params.append(game)
+                    query += f" AND game = {escape_sql_string(game)}"
                 
                 if search:
-                    query += " AND (name ILIKE %s OR description ILIKE %s)"
-                    search_pattern = f'%{search}%'
-                    params.extend([search_pattern, search_pattern])
+                    search_escaped = escape_sql_string(f'%{search}%')
+                    query += f" AND (name ILIKE {search_escaped} OR description ILIKE {search_escaped})"
                 
                 query += " ORDER BY downloads DESC, rating DESC"
                 
-                cursor.execute(query, params)
+                cursor.execute(query)
                 scripts = cursor.fetchall()
                 
                 return {
@@ -111,22 +111,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         elif method == 'POST':
             body_data = json.loads(event.get('body', '{}'))
             
-            cursor.execute(
-                """INSERT INTO t_p10328449_roblox_scripts_porta.scripts 
-                (name, description, script_content, category, game, author, verified) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s) 
-                RETURNING *""",
-                (
-                    body_data.get('name'),
-                    body_data.get('description'),
-                    body_data.get('script_content'),
-                    body_data.get('category'),
-                    body_data.get('game'),
-                    body_data.get('author', 'Anonymous'),
-                    body_data.get('verified', False)
-                )
-            )
+            query = f"""INSERT INTO t_p10328449_roblox_scripts_porta.scripts 
+            (name, description, script_content, category, game, author, verified) 
+            VALUES (
+                {escape_sql_string(body_data.get('name'))},
+                {escape_sql_string(body_data.get('description'))},
+                {escape_sql_string(body_data.get('script_content'))},
+                {escape_sql_string(body_data.get('category'))},
+                {escape_sql_string(body_data.get('game'))},
+                {escape_sql_string(body_data.get('author', 'Anonymous'))},
+                {escape_sql_string(body_data.get('verified', False))}
+            ) 
+            RETURNING *"""
             
+            cursor.execute(query)
             new_script = cursor.fetchone()
             conn.commit()
             
@@ -138,9 +136,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         elif method == 'PUT':
-            path_params = event.get('pathParams') or {}
-            script_id = path_params.get('id')
-            
             if not script_id:
                 return {
                     'statusCode': 400,
@@ -152,19 +147,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             body_data = json.loads(event.get('body', '{}'))
             
             update_fields = []
-            params = []
             
             for field in ['name', 'description', 'script_content', 'category', 'game', 'author', 'verified']:
                 if field in body_data:
-                    update_fields.append(f"{field} = %s")
-                    params.append(body_data[field])
+                    update_fields.append(f"{field} = {escape_sql_string(body_data[field])}")
             
             if update_fields:
                 update_fields.append("updated_at = CURRENT_TIMESTAMP")
-                params.append(script_id)
                 
-                query = f"UPDATE t_p10328449_roblox_scripts_porta.scripts SET {', '.join(update_fields)} WHERE id = %s RETURNING *"
-                cursor.execute(query, params)
+                query = f"UPDATE t_p10328449_roblox_scripts_porta.scripts SET {', '.join(update_fields)} WHERE id = {escape_sql_string(script_id)} RETURNING *"
+                cursor.execute(query)
                 
                 updated_script = cursor.fetchone()
                 conn.commit()
@@ -185,9 +177,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         elif method == 'DELETE':
-            path_params = event.get('pathParams') or {}
-            script_id = path_params.get('id')
-            
             if not script_id:
                 return {
                     'statusCode': 400,
@@ -196,7 +185,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            cursor.execute("DELETE FROM t_p10328449_roblox_scripts_porta.scripts WHERE id = %s RETURNING id", (script_id,))
+            query = f"DELETE FROM t_p10328449_roblox_scripts_porta.scripts WHERE id = {escape_sql_string(script_id)} RETURNING id"
+            cursor.execute(query)
             deleted = cursor.fetchone()
             conn.commit()
             

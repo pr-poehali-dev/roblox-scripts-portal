@@ -110,7 +110,7 @@ export default function Admin() {
 
     try {
       const url = editingScript 
-        ? `${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e/${editingScript.id}`
+        ? `${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e?id=${editingScript.id}`
         : `${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e`;
       
       const response = await fetch(url, {
@@ -123,6 +123,9 @@ export default function Admin() {
         toast.success(editingScript ? 'Скрипт обновлён!' : 'Скрипт создан!');
         setIsDialogOpen(false);
         fetchScripts();
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Ошибка сохранения');
       }
     } catch (error) {
       toast.error('Ошибка сохранения');
@@ -133,13 +136,16 @@ export default function Admin() {
     if (!confirm('Удалить этот скрипт?')) return;
 
     try {
-      const response = await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e/${id}`, {
+      const response = await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e?id=${id}`, {
         method: 'DELETE'
       });
 
       if (response.ok) {
         toast.success('Скрипт удалён');
         fetchScripts();
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Ошибка удаления');
       }
     } catch (error) {
       toast.error('Ошибка удаления');
@@ -148,7 +154,7 @@ export default function Admin() {
 
   const toggleVerified = async (script: Script) => {
     try {
-      const response = await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e/${script.id}`, {
+      const response = await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e?id=${script.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ verified: !script.verified })
@@ -157,6 +163,9 @@ export default function Admin() {
       if (response.ok) {
         toast.success('Статус обновлён');
         fetchScripts();
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Ошибка обновления');
       }
     } catch (error) {
       toast.error('Ошибка обновления');

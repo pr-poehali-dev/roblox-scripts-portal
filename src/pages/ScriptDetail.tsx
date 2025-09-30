@@ -50,7 +50,7 @@ export default function ScriptDetail() {
 
   const fetchScript = async () => {
     try {
-      const response = await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e/${id}`);
+      const response = await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e?id=${id}`);
       const data = await response.json();
       setScript(data);
     } catch (error) {
@@ -64,7 +64,7 @@ export default function ScriptDetail() {
     if (!script) return;
     
     try {
-      await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e/${id}`, {
+      await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e?id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ downloads: script.downloads + 1 })

@@ -104,7 +104,7 @@ export default function Index() {
             <p className="text-xl md:text-2xl text-muted-foreground mb-8">
               Мощный портал скриптов для Roblox с проверенной безопасностью
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button size="lg" className="gradient-primary border-0 text-lg">
                 <Icon name="Download" size={20} className="mr-2" />
                 Скачать Executor
@@ -113,6 +113,31 @@ export default function Index() {
                 <Icon name="BookOpen" size={20} className="mr-2" />
                 Документация
               </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              <div className="text-center p-4 bg-card/50 rounded-lg border border-border">
+                <div className="text-3xl font-bold gradient-text mb-1">{scripts.length}+</div>
+                <div className="text-sm text-muted-foreground">Скриптов</div>
+              </div>
+              <div className="text-center p-4 bg-card/50 rounded-lg border border-border">
+                <div className="text-3xl font-bold text-green-500 mb-1">
+                  {scripts.filter(s => s.verified).length}
+                </div>
+                <div className="text-sm text-muted-foreground">Проверено</div>
+              </div>
+              <div className="text-center p-4 bg-card/50 rounded-lg border border-border">
+                <div className="text-3xl font-bold text-yellow-500 mb-1">
+                  {scripts.reduce((sum, s) => sum + s.downloads, 0).toLocaleString('ru')}
+                </div>
+                <div className="text-sm text-muted-foreground">Загрузок</div>
+              </div>
+              <div className="text-center p-4 bg-card/50 rounded-lg border border-border">
+                <div className="text-3xl font-bold text-primary mb-1">
+                  {scripts.length > 0 ? (scripts.reduce((sum, s) => sum + parseFloat(s.rating), 0) / scripts.length).toFixed(1) : '0.0'}
+                </div>
+                <div className="text-sm text-muted-foreground">Рейтинг</div>
+              </div>
             </div>
           </div>
         </div>
