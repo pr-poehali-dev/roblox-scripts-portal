@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Get all scripts",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get scripts by category",
+      "method": "GET",
+      "path": "/?category=Combat",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,89 +9,57 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 
+const API_BASE = 'https://functions.poehali.dev';
+
 interface Script {
   id: number;
   name: string;
   description: string;
   category: string;
   game: string;
-  rating: number;
+  rating: string;
   downloads: number;
   verified: boolean;
+  author: string;
 }
-
-const mockScripts: Script[] = [
-  {
-    id: 1,
-    name: "Ultimate ESP",
-    description: "Advanced ESP with customizable colors and distance indicators",
-    category: "Combat",
-    game: "Universal",
-    rating: 4.8,
-    downloads: 15420,
-    verified: true
-  },
-  {
-    id: 2,
-    name: "Speed Boost Pro",
-    description: "Smooth speed modifications with anti-detection",
-    category: "Movement",
-    game: "Universal",
-    rating: 4.6,
-    downloads: 12350,
-    verified: true
-  },
-  {
-    id: 3,
-    name: "Auto Farm Elite",
-    description: "Intelligent auto-farming with multiple game support",
-    category: "Automation",
-    game: "Blox Fruits",
-    rating: 4.9,
-    downloads: 23100,
-    verified: true
-  },
-  {
-    id: 4,
-    name: "Aimbot Advanced",
-    description: "Precision targeting with smooth aim and prediction",
-    category: "Combat",
-    game: "Arsenal",
-    rating: 4.7,
-    downloads: 18900,
-    verified: true
-  },
-  {
-    id: 5,
-    name: "Teleport Hub",
-    description: "Instant teleportation to any location on the map",
-    category: "Movement",
-    game: "Universal",
-    rating: 4.5,
-    downloads: 9870,
-    verified: false
-  },
-  {
-    id: 6,
-    name: "Infinite Jump",
-    description: "Jump infinitely high with customizable height",
-    category: "Movement",
-    game: "Universal",
-    rating: 4.4,
-    downloads: 7650,
-    verified: true
-  }
-];
 
 const categories = ["All", "Combat", "Movement", "Automation", "Visual", "Misc"];
 const games = ["All Games", "Universal", "Blox Fruits", "Arsenal", "Phantom Forces", "Jailbreak"];
 
 export default function Index() {
+  const navigate = useNavigate();
+  const [scripts, setScripts] = useState<Script[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedGame, setSelectedGame] = useState('All Games');
 
-  const filteredScripts = mockScripts.filter(script => {
+  useEffect(() => {
+    fetchScripts();
+  }, []);
+
+  const fetchScripts = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (selectedCategory !== 'All') params.append('category', selectedCategory);
+      if (selectedGame !== 'All Games') params.append('game', selectedGame);
+      if (searchQuery) params.append('search', searchQuery);
+
+      const response = await fetch(`${API_BASE}/c943bcfa-43f3-4975-bb8c-7abad2a4776e?${params}`);
+      const data = await response.json();
+      setScripts(data);
+    } catch (error) {
+      toast.error('Ошибка загрузки скриптов');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchScripts();
+  }, [selectedCategory, selectedGame]);
+
+  const filteredScripts = scripts.filter(script => {
     const matchesSearch = script.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          script.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || script.category === selectedCategory;
@@ -116,9 +86,9 @@ export default function Index() {
             <a href="#support" className="text-sm font-medium hover:text-primary transition-colors">Поддержка</a>
           </div>
 
-          <Button className="gradient-primary border-0">
-            <Icon name="User" size={16} className="mr-2" />
-            Войти
+          <Button className="gradient-primary border-0" onClick={() => navigate('/admin')}>
+            <Icon name="Settings" size={16} className="mr-2" />
+            Админ
           </Button>
         </div>
       </nav>
@@ -163,6 +133,7 @@ export default function Index() {
                   className="pl-10 h-12 bg-card border-border"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && fetchScripts()}
                 />
               </div>
               <Select value={selectedGame} onValueChange={setSelectedGame}>
@@ -192,7 +163,12 @@ export default function Index() {
             </Tabs>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Icon name="Loader2" size={48} className="animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredScripts.map((script, index) => (
               <Card 
                 key={script.id} 
@@ -217,7 +193,7 @@ export default function Index() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-1">
                       <Icon name="Star" size={16} className="text-yellow-500 fill-yellow-500" />
-                      <span className="text-sm font-medium">{script.rating}</span>
+                      <span className="text-sm font-medium">{parseFloat(script.rating).toFixed(1)}</span>
                     </div>
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Icon name="Download" size={16} />
@@ -230,14 +206,18 @@ export default function Index() {
                       {script.game}
                     </Badge>
                   </div>
-                  <Button className="w-full mt-4 gradient-primary border-0 hover:opacity-90">
-                    <Icon name="Download" size={16} className="mr-2" />
-                    Скачать
+                  <Button 
+                    className="w-full mt-4 gradient-primary border-0 hover:opacity-90"
+                    onClick={() => navigate(`/script/${script.id}`)}
+                  >
+                    <Icon name="Eye" size={16} className="mr-2" />
+                    Подробнее
                   </Button>
                 </CardContent>
               </Card>
             ))}
-          </div>
+            </div>
+          )}
 
           {filteredScripts.length === 0 && (
             <div className="text-center py-12">
