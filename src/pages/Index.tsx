@@ -72,68 +72,54 @@ export default function Index() {
       <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center">
-              <Icon name="Code2" size={24} className="text-white" />
+            <div className="w-10 h-10 bg-secondary rounded flex items-center justify-center">
+              <Icon name="Code2" size={20} />
             </div>
-            <h1 className="text-2xl font-bold font-rajdhani gradient-text">DELTA XENO</h1>
+            <h1 className="text-2xl font-bold font-rajdhani">DELTA XENO</h1>
           </div>
           
           <div className="hidden md:flex items-center gap-6">
-            <a href="#home" className="text-sm font-medium hover:text-primary transition-colors">Главная</a>
             <a href="#scripts" className="text-sm font-medium hover:text-primary transition-colors">Скрипты</a>
-            <a href="#catalog" className="text-sm font-medium hover:text-primary transition-colors">Каталог</a>
-            <a href="#community" className="text-sm font-medium hover:text-primary transition-colors">Сообщество</a>
-            <a href="#support" className="text-sm font-medium hover:text-primary transition-colors">Поддержка</a>
           </div>
-
-          <Button className="gradient-primary border-0" onClick={() => navigate('/admin')}>
-            <Icon name="Settings" size={16} className="mr-2" />
-            Админ
-          </Button>
         </div>
       </nav>
 
       <section className="relative overflow-hidden py-20 md:py-32">
-        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{backgroundImage: 'url(/img/a61d971b-fb1a-47c4-aec5-afb01410fcd6.jpg)'}}></div>
-        <div className="absolute inset-0 gradient-primary opacity-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary to-background"></div>
         <div className="container relative px-4">
           <div className="mx-auto max-w-3xl text-center animate-fade-in">
-            <h2 className="text-5xl md:text-7xl font-bold font-rajdhani mb-6 gradient-text">
+            <h2 className="text-5xl md:text-7xl font-bold font-rajdhani mb-6">
               DELTA XENO
             </h2>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8">
               Мощный портал скриптов для Roblox с проверенной безопасностью
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="gradient-primary border-0 text-lg">
+              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg">
                 <Icon name="Download" size={20} className="mr-2" />
                 Скачать Executor
               </Button>
-              <Button size="lg" variant="outline" className="text-lg border-primary hover:bg-primary/10">
-                <Icon name="BookOpen" size={20} className="mr-2" />
-                Документация
-              </Button>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              <div className="text-center p-4 bg-card/50 rounded-lg border border-border">
-                <div className="text-3xl font-bold gradient-text mb-1">{scripts.length}+</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+              <div className="text-center p-4 bg-card rounded border border-border">
+                <div className="text-3xl font-bold mb-1">{scripts.length}</div>
                 <div className="text-sm text-muted-foreground">Скриптов</div>
               </div>
-              <div className="text-center p-4 bg-card/50 rounded-lg border border-border">
-                <div className="text-3xl font-bold text-green-500 mb-1">
+              <div className="text-center p-4 bg-card rounded border border-border">
+                <div className="text-3xl font-bold mb-1">
                   {scripts.filter(s => s.verified).length}
                 </div>
                 <div className="text-sm text-muted-foreground">Проверено</div>
               </div>
-              <div className="text-center p-4 bg-card/50 rounded-lg border border-border">
-                <div className="text-3xl font-bold text-yellow-500 mb-1">
+              <div className="text-center p-4 bg-card rounded border border-border">
+                <div className="text-3xl font-bold mb-1">
                   {scripts.reduce((sum, s) => sum + s.downloads, 0).toLocaleString('ru')}
                 </div>
                 <div className="text-sm text-muted-foreground">Загрузок</div>
               </div>
-              <div className="text-center p-4 bg-card/50 rounded-lg border border-border">
-                <div className="text-3xl font-bold text-primary mb-1">
+              <div className="text-center p-4 bg-card rounded border border-border">
+                <div className="text-3xl font-bold mb-1">
                   {scripts.length > 0 ? (scripts.reduce((sum, s) => sum + parseFloat(s.rating), 0) / scripts.length).toFixed(1) : '0.0'}
                 </div>
                 <div className="text-sm text-muted-foreground">Рейтинг</div>
@@ -180,7 +166,7 @@ export default function Index() {
                   <TabsTrigger 
                     key={category} 
                     value={category}
-                    className="data-[state=active]:gradient-primary data-[state=active]:text-white"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     {category}
                   </TabsTrigger>
@@ -209,7 +195,7 @@ export default function Index() {
                         <Icon name="BadgeCheck" size={18} className="text-primary" />
                       )}
                     </CardTitle>
-                    <Badge variant="outline" className="border-primary text-primary">
+                    <Badge variant="secondary">
                       {script.category}
                     </Badge>
                   </div>
@@ -233,7 +219,7 @@ export default function Index() {
                     </Badge>
                   </div>
                   <Button 
-                    className="w-full mt-4 gradient-primary border-0 hover:opacity-90"
+                    className="w-full mt-4 bg-primary text-primary-foreground hover:bg-primary/90"
                     onClick={() => navigate(`/script/${script.id}`)}
                   >
                     <Icon name="Eye" size={16} className="mr-2" />
@@ -255,29 +241,29 @@ export default function Index() {
         </div>
       </section>
 
-      <section className="py-16 border-t border-border bg-card/30">
+      <section className="py-16 border-t border-border">
         <div className="container px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center animate-fade-in">
-              <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4">
-                <Icon name="Shield" size={32} className="text-white" />
+            <div className="text-center">
+              <div className="w-12 h-12 bg-secondary rounded flex items-center justify-center mx-auto mb-4">
+                <Icon name="Shield" size={24} />
               </div>
-              <h4 className="text-xl font-bold font-rajdhani mb-2">Проверенная безопасность</h4>
-              <p className="text-muted-foreground">Все скрипты проходят модерацию и проверку</p>
+              <h4 className="text-lg font-semibold mb-2">Проверенная безопасность</h4>
+              <p className="text-sm text-muted-foreground">Все скрипты проходят модерацию</p>
             </div>
-            <div className="text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4">
-                <Icon name="Users" size={32} className="text-white" />
+            <div className="text-center">
+              <div className="w-12 h-12 bg-secondary rounded flex items-center justify-center mx-auto mb-4">
+                <Icon name="Users" size={24} />
               </div>
-              <h4 className="text-xl font-bold font-rajdhani mb-2">Активное сообщество</h4>
-              <p className="text-muted-foreground">Тысячи пользователей и разработчиков</p>
+              <h4 className="text-lg font-semibold mb-2">Активное сообщество</h4>
+              <p className="text-sm text-muted-foreground">Тысячи пользователей</p>
             </div>
-            <div className="text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4">
-                <Icon name="Zap" size={32} className="text-white" />
+            <div className="text-center">
+              <div className="w-12 h-12 bg-secondary rounded flex items-center justify-center mx-auto mb-4">
+                <Icon name="Zap" size={24} />
               </div>
-              <h4 className="text-xl font-bold font-rajdhani mb-2">Регулярные обновления</h4>
-              <p className="text-muted-foreground">Новые скрипты каждую неделю</p>
+              <h4 className="text-lg font-semibold mb-2">Регулярные обновления</h4>
+              <p className="text-sm text-muted-foreground">Новые скрипты каждую неделю</p>
             </div>
           </div>
         </div>
@@ -285,27 +271,16 @@ export default function Index() {
 
       <footer className="border-t border-border py-8 mt-16">
         <div className="container px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                <Icon name="Code2" size={16} className="text-white" />
+          <div className="text-center">
+            <div className="flex items-center gap-2 justify-center mb-2">
+              <div className="w-8 h-8 bg-secondary rounded flex items-center justify-center">
+                <Icon name="Code2" size={16} />
               </div>
-              <span className="font-bold font-rajdhani gradient-text">DELTA XENO</span>
+              <span className="font-bold font-rajdhani">DELTA XENO</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2024 Delta Xeno. Все права защищены.
+              © 2024 Delta Xeno
             </p>
-            <div className="flex items-center gap-4">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Icon name="MessageCircle" size={20} />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Icon name="Github" size={20} />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Icon name="Twitter" size={20} />
-              </a>
-            </div>
           </div>
         </div>
       </footer>

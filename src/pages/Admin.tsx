@@ -182,13 +182,13 @@ export default function Admin() {
               На главную
             </Button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                <Icon name="Shield" size={16} className="text-white" />
+              <div className="w-8 h-8 bg-secondary rounded flex items-center justify-center">
+                <Icon name="Shield" size={16} />
               </div>
-              <span className="font-bold font-rajdhani gradient-text">АДМИН-ПАНЕЛЬ</span>
+              <span className="font-bold font-rajdhani">Админ-панель</span>
             </div>
           </div>
-          <Button className="gradient-primary border-0" onClick={handleCreate}>
+          <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleCreate}>
             <Icon name="Plus" size={16} className="mr-2" />
             Добавить скрипт
           </Button>
@@ -201,25 +201,25 @@ export default function Admin() {
             <CardTitle className="font-rajdhani">Статистика</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold gradient-text mb-1">{scripts.length}</div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="text-center p-3 bg-secondary rounded">
+                <div className="text-3xl font-bold mb-1">{scripts.length}</div>
                 <div className="text-sm text-muted-foreground">Всего скриптов</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-500 mb-1">
+              <div className="text-center p-3 bg-secondary rounded">
+                <div className="text-3xl font-bold mb-1">
                   {scripts.filter(s => s.verified).length}
                 </div>
                 <div className="text-sm text-muted-foreground">Проверенных</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-500 mb-1">
+              <div className="text-center p-3 bg-secondary rounded">
+                <div className="text-3xl font-bold mb-1">
                   {scripts.reduce((sum, s) => sum + s.downloads, 0).toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">Загрузок</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">
+              <div className="text-center p-3 bg-secondary rounded">
+                <div className="text-3xl font-bold mb-1">
                   {scripts.length > 0 ? (scripts.reduce((sum, s) => sum + parseFloat(s.rating), 0) / scripts.length).toFixed(1) : '0.0'}
                 </div>
                 <div className="text-sm text-muted-foreground">Средний рейтинг</div>

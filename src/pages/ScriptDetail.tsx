@@ -142,16 +142,12 @@ export default function ScriptDetail() {
               Назад
             </Button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                <Icon name="Code2" size={16} className="text-white" />
+              <div className="w-8 h-8 bg-secondary rounded flex items-center justify-center">
+                <Icon name="Code2" size={16} />
               </div>
-              <span className="font-bold font-rajdhani gradient-text">DELTA XENO</span>
+              <span className="font-bold font-rajdhani">DELTA XENO</span>
             </div>
           </div>
-          <Button variant="outline" onClick={() => navigate('/admin')}>
-            <Icon name="Settings" size={16} className="mr-2" />
-            Админ
-          </Button>
         </div>
       </nav>
 
@@ -205,16 +201,13 @@ export default function ScriptDetail() {
                 <Separator />
 
                 <div className="flex gap-3">
-                  <Button className="flex-1 gradient-primary border-0" size="lg" onClick={handleDownload}>
+                  <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" size="lg" onClick={handleDownload}>
                     <Icon name="Download" size={20} className="mr-2" />
                     Скачать скрипт
                   </Button>
                   <Button variant="outline" size="lg" onClick={() => setShowCode(!showCode)}>
                     <Icon name={showCode ? "EyeOff" : "Eye"} size={20} className="mr-2" />
                     {showCode ? 'Скрыть' : 'Просмотр'}
-                  </Button>
-                  <Button variant="outline" size="lg">
-                    <Icon name="Share2" size={20} />
                   </Button>
                 </div>
 
@@ -265,7 +258,7 @@ export default function ScriptDetail() {
                     onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
                     rows={4}
                   />
-                  <Button onClick={handleSubmitReview} className="gradient-primary border-0">
+                  <Button onClick={handleSubmitReview} className="bg-primary text-primary-foreground hover:bg-primary/90">
                     <Icon name="Send" size={16} className="mr-2" />
                     Отправить отзыв
                   </Button>
@@ -278,7 +271,7 @@ export default function ScriptDetail() {
                     <div key={review.id} className="border-b border-border pb-4 last:border-0 animate-fade-in">
                       <div className="flex items-start gap-3">
                         <Avatar>
-                          <AvatarFallback className="gradient-primary text-white">
+                          <AvatarFallback className="bg-secondary">
                             {review.author.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
