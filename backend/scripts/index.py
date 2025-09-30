@@ -47,14 +47,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             if script_id:
                 cursor.execute(
-                    "SELECT * FROM scripts WHERE id = %s",
+                    "SELECT * FROM t_p10328449_roblox_scripts_porta.scripts WHERE id = %s",
                     (script_id,)
                 )
                 script = cursor.fetchone()
                 
                 if script:
                     cursor.execute(
-                        "SELECT * FROM reviews WHERE script_id = %s ORDER BY created_at DESC",
+                        "SELECT * FROM t_p10328449_roblox_scripts_porta.reviews WHERE script_id = %s ORDER BY created_at DESC",
                         (script_id,)
                     )
                     reviews = cursor.fetchall()
@@ -80,7 +80,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 game = query_params.get('game')
                 search = query_params.get('search')
                 
-                query = "SELECT * FROM scripts WHERE 1=1"
+                query = "SELECT * FROM t_p10328449_roblox_scripts_porta.scripts WHERE 1=1"
                 params = []
                 
                 if category and category != 'All':
@@ -112,7 +112,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             body_data = json.loads(event.get('body', '{}'))
             
             cursor.execute(
-                """INSERT INTO scripts 
+                """INSERT INTO t_p10328449_roblox_scripts_porta.scripts 
                 (name, description, script_content, category, game, author, verified) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s) 
                 RETURNING *""",
@@ -163,7 +163,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 update_fields.append("updated_at = CURRENT_TIMESTAMP")
                 params.append(script_id)
                 
-                query = f"UPDATE scripts SET {', '.join(update_fields)} WHERE id = %s RETURNING *"
+                query = f"UPDATE t_p10328449_roblox_scripts_porta.scripts SET {', '.join(update_fields)} WHERE id = %s RETURNING *"
                 cursor.execute(query, params)
                 
                 updated_script = cursor.fetchone()
@@ -196,7 +196,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            cursor.execute("DELETE FROM scripts WHERE id = %s RETURNING id", (script_id,))
+            cursor.execute("DELETE FROM t_p10328449_roblox_scripts_porta.scripts WHERE id = %s RETURNING id", (script_id,))
             deleted = cursor.fetchone()
             conn.commit()
             

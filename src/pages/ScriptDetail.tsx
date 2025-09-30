@@ -30,7 +30,7 @@ interface Script {
 
 interface Review {
   id: number;
-  user_name: string;
+  author: string;
   rating: number;
   comment: string;
   created_at: string;
@@ -41,7 +41,7 @@ export default function ScriptDetail() {
   const navigate = useNavigate();
   const [script, setScript] = useState<Script | null>(null);
   const [loading, setLoading] = useState(true);
-  const [newReview, setNewReview] = useState({ user_name: '', rating: 5, comment: '' });
+  const [newReview, setNewReview] = useState({ author: '', rating: 5, comment: '' });
   const [showCode, setShowCode] = useState(false);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function ScriptDetail() {
   };
 
   const handleSubmitReview = async () => {
-    if (!newReview.user_name || !newReview.comment) {
+    if (!newReview.author || !newReview.comment) {
       toast.error('Заполните все поля');
       return;
     }
@@ -96,13 +96,15 @@ export default function ScriptDetail() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           script_id: id,
-          ...newReview
+          user_name: newReview.author,
+          rating: newReview.rating,
+          comment: newReview.comment
         })
       });
 
       if (response.ok) {
         toast.success('Отзыв добавлен!');
-        setNewReview({ user_name: '', rating: 5, comment: '' });
+        setNewReview({ author: '', rating: 5, comment: '' });
         fetchScript();
       }
     } catch (error) {
@@ -239,8 +241,8 @@ export default function ScriptDetail() {
                 <div className="space-y-4">
                   <Input
                     placeholder="Ваше имя"
-                    value={newReview.user_name}
-                    onChange={(e) => setNewReview({ ...newReview, user_name: e.target.value })}
+                    value={newReview.author}
+                    onChange={(e) => setNewReview({ ...newReview, author: e.target.value })}
                   />
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -277,12 +279,12 @@ export default function ScriptDetail() {
                       <div className="flex items-start gap-3">
                         <Avatar>
                           <AvatarFallback className="gradient-primary text-white">
-                            {review.user_name.charAt(0).toUpperCase()}
+                            {review.author.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-semibold">{review.user_name}</span>
+                            <span className="font-semibold">{review.author}</span>
                             <span className="text-xs text-muted-foreground">
                               {new Date(review.created_at).toLocaleDateString('ru-RU')}
                             </span>

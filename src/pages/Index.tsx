@@ -94,6 +94,7 @@ export default function Index() {
       </nav>
 
       <section className="relative overflow-hidden py-20 md:py-32">
+        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{backgroundImage: 'url(/img/a61d971b-fb1a-47c4-aec5-afb01410fcd6.jpg)'}}></div>
         <div className="absolute inset-0 gradient-primary opacity-10"></div>
         <div className="container relative px-4">
           <div className="mx-auto max-w-3xl text-center animate-fade-in">

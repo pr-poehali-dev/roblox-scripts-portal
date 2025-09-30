@@ -46,7 +46,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             if script_id:
                 cursor.execute(
-                    "SELECT * FROM reviews WHERE script_id = %s ORDER BY created_at DESC",
+                    "SELECT * FROM t_p10328449_roblox_scripts_porta.reviews WHERE script_id = %s ORDER BY created_at DESC",
                     (script_id,)
                 )
                 reviews = cursor.fetchall()
@@ -82,7 +82,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             cursor.execute(
-                """INSERT INTO reviews (script_id, user_name, rating, comment) 
+                """INSERT INTO t_p10328449_roblox_scripts_porta.reviews (script_id, author, rating, comment) 
                 VALUES (%s, %s, %s, %s) RETURNING *""",
                 (script_id, user_name, rating, comment)
             )
@@ -90,8 +90,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             new_review = cursor.fetchone()
             
             cursor.execute(
-                """UPDATE scripts 
-                SET rating = (SELECT AVG(rating)::DECIMAL(3,2) FROM reviews WHERE script_id = %s)
+                """UPDATE t_p10328449_roblox_scripts_porta.scripts 
+                SET rating = (SELECT AVG(rating)::DECIMAL(3,2) FROM t_p10328449_roblox_scripts_porta.reviews WHERE script_id = %s)
                 WHERE id = %s""",
                 (script_id, script_id)
             )
